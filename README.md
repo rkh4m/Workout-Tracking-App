@@ -1,2 +1,2 @@
 # Workout Tracking App
- Fullstack project that will track hours worked out, the type of workout preformed, sets and reps, and with a calorie tracking option as well.
+ Fullstack project using JavaScript and React to create a daily updating schedule of my gym workout schedule and workouts that can be edited and modified by the user.
