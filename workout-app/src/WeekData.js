@@ -15,24 +15,17 @@ export default class WeekData {
         this.q.enqueue(element);
       });
       this.weekDate = new Date(itemArray[itemArray.length-1].date);
+      this.weekDate.setDate(this.weekDate.getDate()+1);
       this.q.totalItemsQueued = daysQueued;
     }
   }
+  /**
+   * Creates the initial week.
+   */
   createWeek() {
     for (let i = 0; i < 7; i++) {
       this.q.enqueue(this.createGymDay(this.q.totalItemsQueued + 1));
     }
-  }
-  getGymDay(gymDate){
-    var current = this.q.frontIndex;
-    while(current){
-      var thisDate = current.data.date.getDate();
-      if(thisDate === gymDate){
-        return current;
-      }
-      current = current.next;
-    }
-    return null;
   }
   /**
    * Creates data to be stored by queue and determines the muscle focus of the gym day.
@@ -55,6 +48,7 @@ export default class WeekData {
       date: new Date(this.weekDate),
     };
     this.weekDate.setDate(this.weekDate.getDate()+1);
+    console.log(this.weekDate);
     return gymDay;
   }
   /**
@@ -70,17 +64,3 @@ export default class WeekData {
     }
   }
 }
-
-// const week = new WeekData();
-// week.createWeek();
-
-// var q = week.q.toArray();
-// console.log(tmrw.data);
-
-// var firstDay = week.q.peek().date.getDate();
-// console.log(firstDay)
-// console.log(new Date().getDate())
-// if(firstDay == new Date().getDate()) console.log(true); else console.log("nope"); 
-
-// var nextDay = week.q.frontIndex.next.data.date;
-// console.log(nextDay)
