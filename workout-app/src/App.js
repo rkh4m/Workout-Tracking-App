@@ -29,9 +29,9 @@ function App() {
       <p>
         Workout schedule for Week:{" "}
         <b>
-          {localStorage.getItem("weekOf" + localStorage.getItem("currYear"))}
+          {GetWeek()}
         </b>{" "}
-        of {localStorage.getItem("currYear")}
+        of {firstDate.getFullYear()}
       </p>
       <div className="container">
         {DisplayDay(extractedData[0], "1")}
@@ -43,7 +43,7 @@ function App() {
         {DisplayDay(extractedData[6], "7")}
       </div>
       <div className="popup" id="workout" />
-      {addListeners()}
+      {AddListeners()}
     </>
   );
 }
@@ -74,7 +74,7 @@ function DisplayDay(qData, boxId) {
         <u>{days[thisDate.getDay()]}</u>
       </ul>
       <time dateTime={dateStr}>{thisDate.getDate()}</time>
-      <select id={"userChoice" + boxId}>{createOptions(qData.focusDay)}</select>
+      <select id={"userChoice" + boxId}>{CreateOptions(qData.focusDay)}</select>
     </div>
   );
 }
@@ -90,7 +90,6 @@ function DisplayDay(qData, boxId) {
  */
 
 function UpdateQueue(extractedData, userChange) {
-  updateYearAndWeek();
   var today = new Date();
   var indToday = 0;
   for (var i = 0; i < extractedData.length; i++) {
@@ -116,31 +115,30 @@ function UpdateQueue(extractedData, userChange) {
     localStorage.setItem("daysQueued", q.totalItemsQueued);
     localStorage.setItem("week", JSON.stringify(extractedData));
   }
+}
 
-  /**
+/**
    * Updates the Week number and Year.
-   */
-  function updateYearAndWeek() {
-    const today = new Date();
-    const savedYear = localStorage.getItem("currYear");
-    var weekOf = "weekOf" + savedYear;
+*/
+function GetWeek() {
+  const today = new Date();
+  var weeksPassed = Math.floor(DaysPassed(today)/7)+1;
 
-    if (today.getFullYear() !== parseInt(savedYear)) {
-      localStorage.setItem("currYear", today.getFullYear());
-      localStorage.removeItem(weekOf);
-      weekOf = "weekOf" + localStorage.getItem("currYear");
-      localStorage.setItem(weekOf, 1);
-    }
+  return weeksPassed;
+}
 
-    let called = localStorage.getItem("called");
-    if (today.getDay() === 0 && called === "false") {
-      var numWeek = parseInt(localStorage.getItem(weekOf));
-      localStorage.setItem(weekOf, numWeek - 1);
-      localStorage.setItem("called", true);
-    } else if (today.getDay() !== 0) {
-      localStorage.setItem("called", false);
-    }
-  }
+/**
+ * Credit for this method:
+ * https://www.w3resource.com/javascript-exercises/javascript-date-exercise-16.php
+ * 
+ * @param {Date} dt 
+ * @returns Days passed since beginning of the year.
+ */
+function DaysPassed(dt) {
+  var current = new Date(dt.getTime());
+  var previous = new Date(dt.getFullYear(), 0, 1);
+
+  return Math.ceil((current - previous + 1) / 86400000);
 }
 
 /**
@@ -152,19 +150,18 @@ function init() {
     weekData.createWeek();
     localStorage.setItem("week", JSON.stringify(weekData.q.toArray()));
     localStorage.setItem("daysQueued", weekData.q.totalItemsQueued);
-    localStorage.setItem("called", true);
   }
 }
 
 /**
  * Allows the central textbox to update whenever the user hovers over different boxes.
  */
-function addListeners() {
+function AddListeners() {
   var boxes = document.querySelectorAll(".box");
 
   boxes.forEach(function (box) {
     box.addEventListener("mouseover", function () {
-      showWorkout(box.getAttribute("data-content"));
+      ShowWorkout(box.getAttribute("data-content"));
       sessionStorage.setItem("currBox", box.id);
     });
   });
@@ -172,7 +169,7 @@ function addListeners() {
   var selections = document.querySelectorAll("select");
   selections.forEach(function (dropdownSelect) {
     dropdownSelect.addEventListener("change", function () {
-      updateUserChoice();
+      UpdateUserChoice();
     });
   });
 }
@@ -182,7 +179,7 @@ function addListeners() {
  *
  * @param {String} content
  */
-function showWorkout(content) {
+function ShowWorkout(content) {
   var workout = document.getElementById("workout");
   if (workout) {
     workout.innerHTML = content;
@@ -217,7 +214,7 @@ function showWorkout(content) {
  *    Initial focus day.
  */
 
-function createOptions(focus) {
+function CreateOptions(focus) {
   var options = ["Leg", "Push", "Pull", "Rest"];
 
   var temp = options[options.length - 1];
@@ -239,7 +236,7 @@ function createOptions(focus) {
 /**
  * Updates the box and the corresponding workout with the new selected muscle focus.
  */
-function updateUserChoice() {
+function UpdateUserChoice() {
   var boxId = sessionStorage.getItem("currBox");
   var currBox = document.getElementById(boxId);
 
@@ -261,7 +258,7 @@ function updateUserChoice() {
   }
 
   localStorage.setItem("week", JSON.stringify(updatedData));
-  showWorkout(currBox.getAttribute("data-content"));
+  ShowWorkout(currBox.getAttribute("data-content"));
 }
 
 export default App;
