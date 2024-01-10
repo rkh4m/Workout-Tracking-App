@@ -48,7 +48,6 @@ export default class WeekData {
       date: new Date(this.weekDate),
     };
     this.weekDate.setDate(this.weekDate.getDate()+1);
-    console.log(this.weekDate);
     return gymDay;
   }
   /**
